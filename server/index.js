@@ -5,6 +5,7 @@ import morgan from 'morgan'
 import path from 'path'
 import ioHandler from './io-handler.js'
 import routes from './routes/index.js'
+import Database from './db.js'
 
 const app = express()
 const server = http.createServer(app)
@@ -12,6 +13,7 @@ const port = process.env.PORT || 8080
 
 app.use(morgan('tiny'))
 app.use(cors())
+app.use(express.json())
 
 // Express only serves static assets in production
 if (process.env.NODE_ENV === 'production') {
@@ -32,3 +34,6 @@ server.listen(port, () => {
 })
 
 ioHandler(server)
+
+// Initialize database
+Database.init()
