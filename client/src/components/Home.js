@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { API_BASE_URL } from '../constants'
 import { useSocketContext } from '../context/SocketContext'
 import { useUserContext } from '../context/UserContext'
+import GameSettings from '../models/GameSettings'
 
 const Home = () => {
   const navigate = useNavigate()
@@ -16,61 +17,24 @@ const Home = () => {
     }
   }, [])
 
-  const getGames = async () => {
-    try {
-      const res = await fetch(`${API_BASE_URL}/api/game`, {
-        method: 'GET',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-        },
-      })
-      const { ok, games } = await res.json()
-      if (ok && games) {
-        console.log(games)
-      }
-    } catch (error) {
-      console.log(error)
-    }
-  }
-
-  useEffect(() => {
-    getGames()
-  }, [game])
-
   const createGame = async () => {
     try {
+      const settings = new GameSettings(2, 4)
+
       const res = await fetch(`${API_BASE_URL}/api/game`, {
         method: 'POST',
         headers: {
           Accept: 'application/json',
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ user }),
+        body: JSON.stringify({ user, settings }),
       })
-      const { ok, game } = await res.json()
-      if (ok && game) {
-        setGame(game)
+      const { ok, game, message } = await res.json()
+      if (!ok) {
+        console.error(message)
+        return
       }
-    } catch (error) {
-      console.log(error)
-    }
-  }
-
-  const deleteGame = async () => {
-    try {
-      const res = await fetch(`${API_BASE_URL}/api/game`, {
-        method: 'DELETE',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ gameId: game.id }),
-      })
-      const { ok } = await res.json()
-      if (ok) {
-        setGame(null)
-      }
+      setGame(game)
     } catch (error) {
       console.log(error)
     }
@@ -82,7 +46,6 @@ const Home = () => {
       {socket ? <pre>Connected with socket ID: {socket.id}</pre> : null}
       <button onClick={createGame}>Create game</button>
       <pre>{JSON.stringify(game, null, 2)}</pre>
-      <button onClick={deleteGame}>Delete game</button>
     </React.Fragment>
   )
 }
