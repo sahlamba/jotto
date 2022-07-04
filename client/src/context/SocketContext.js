@@ -17,6 +17,8 @@ export const SocketProvider = ({ children }) => {
     socketListener.on('disconnect', () => {
       setSocket(null)
     })
+
+    return () => socketListener.disconnect()
   }, [])
 
   return (

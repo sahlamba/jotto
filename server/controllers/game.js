@@ -1,18 +1,19 @@
-export const createNew = (req, res) => {
+import Jotto from '../jotto/index.js'
+import { validateUser, validateSettings } from '../utils/validation.js'
+
+export const createGame = (req, res, next) => {
   try {
-    const { userId } = req.query
-    if (!userId) {
-      res.status(400).send({
-        ok: false,
-        message: 'Usage: ?userId=<user-uuid>',
-      })
-      return
-    }
+    const { user, settings } = req.body
+    validateUser(user)
+    validateSettings(settings)
+
+    const game = Jotto.newGame(user, settings)
     res.json({
       ok: true,
-      userId,
+      game,
     })
   } catch (error) {
     console.log(error)
+    next(error)
   }
 }
