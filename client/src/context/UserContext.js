@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from 'react'
-import { useNavigate, useLocation } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import {
   uniqueNamesGenerator,
   adjectives,
@@ -14,6 +14,7 @@ const UserContext = createContext(null)
 export const UserProvider = ({ children }) => {
   const navigate = useNavigate()
   const location = useLocation()
+
   const [user, setUser] = useLocalStorageState('JottoUser', null)
   const [randomName] = useState(
     uniqueNamesGenerator({
@@ -22,17 +23,22 @@ export const UserProvider = ({ children }) => {
     }),
   )
 
+  const isUserRegistered = () => user && user.id
+
   const redirectUrl = () => {
     if (location.search) {
-      return queryString.parse(location.search).next
+      const query = queryString.parse(location.search)
+      return query.next ? query.next : location.pathname
     }
-    return '/'
+    return location.pathname
   }
 
   useEffect(() => {
-    if (user && user.id) {
-      navigate(redirectUrl())
+    if (!isUserRegistered()) {
+      navigate(`/user?next=${redirectUrl()}`)
+      return
     }
+    navigate(redirectUrl())
   }, [user])
 
   const updateName = (event) => {

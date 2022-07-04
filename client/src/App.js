@@ -1,4 +1,9 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from 'react-router-dom'
 import { UserProvider } from './context/UserContext'
 
 import Home from './components/Home'
@@ -11,8 +16,9 @@ const App = () => {
       <UserProvider>
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="user" element={<RegisterUser />} />
-          <Route path="game/:gameId" element={<GameWithSocket />} />
+          <Route path="/user" element={<RegisterUser />} />
+          <Route path="/game/:gameId" element={<GameWithSocket />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </UserProvider>
     </Router>

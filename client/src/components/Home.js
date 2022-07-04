@@ -9,13 +9,6 @@ const Home = () => {
 
   const { user } = useUserContext()
 
-  useEffect(() => {
-    if (!user || !user.id) {
-      navigate('/user?next=/')
-    }
-    console.log('home')
-  }, [])
-
   const createGame = async () => {
     try {
       const settings = new GameSettings(2, 4)

@@ -12,23 +12,11 @@ const Game = () => {
   const { user } = useUserContext()
   const [game, setGame] = useState(null)
 
-  useEffect(() => {
-    console.log('mount')
-    console.log('user', user)
-    if (!user || !user.id) {
-      console.log('navigating to user')
-      navigate('/user?next=/')
-    }
-    console.log('gameId', gameId)
-    if (!gameId) {
-      console.log('navigating')
-      navigate('/')
-    }
-    getGame()
-  }, [])
-
   const getGame = async () => {
     try {
+      if (!gameId) {
+        return
+      }
       const res = await fetch(`${API_BASE_URL}/api/game?id=${gameId}`, {
         method: 'GET',
         headers: {
@@ -48,6 +36,13 @@ const Game = () => {
       console.log(error)
     }
   }
+
+  useEffect(() => {
+    if (!gameId || gameId === '') {
+      navigate('/')
+    }
+    getGame()
+  }, [])
 
   useEffect(() => {
     if (socket) {
