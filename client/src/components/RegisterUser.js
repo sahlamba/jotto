@@ -7,7 +7,7 @@ const RegisterUser = () => {
   return (
     <React.Fragment>
       <form onSubmit={persistUser}>
-        <label for="username">Jotto username: </label>
+        <label htmlFor="username">Jotto username: </label>
         <input
           id="username"
           placeholder={randomName}

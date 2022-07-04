@@ -10,4 +10,8 @@ export default class Jotto {
     this.db.saveGame(game)
     return game
   }
+
+  static getGame(id) {
+    return this.db.getGame(id)
+  }
 }

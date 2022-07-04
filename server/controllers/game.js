@@ -1,6 +1,23 @@
 import Jotto from '../jotto/index.js'
 import { validateUser, validateSettings } from '../utils/validation.js'
 
+export const getGame = (req, res, next) => {
+  try {
+    const { id } = req.query
+    if (!id) {
+      throw new Error(`Invalid game ID: ${id}`)
+    }
+    const game = Jotto.getGame(id)
+    res.json({
+      ok: true,
+      game,
+    })
+  } catch (error) {
+    console.log(error)
+    next(error)
+  }
+}
+
 export const createGame = (req, res, next) => {
   try {
     const { user, settings } = req.body

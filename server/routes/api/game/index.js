@@ -1,8 +1,9 @@
 import { Router as appRouter } from 'express'
-import { createGame } from '../../../controllers/game.js'
+import { getGame, createGame } from '../../../controllers/game.js'
 
 const routes = appRouter()
 
+routes.get('/', getGame)
 routes.post('/', createGame)
 
 export default routes
