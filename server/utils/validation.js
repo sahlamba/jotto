@@ -1,6 +1,6 @@
-export const validateUser = (user) => {
-  if (!user || !user.id || !user.name) {
-    throw new Error(`Invalid user: ${JSON.stringify(user)}`)
+export const validatePlayer = (player) => {
+  if (!player || !player.id || !player.name) {
+    throw new Error(`Invalid player: ${JSON.stringify(player)}`)
   }
 }
 

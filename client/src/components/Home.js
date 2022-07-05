@@ -1,41 +1,54 @@
-import React, { useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { API_BASE_URL } from '../constants'
-import { useUserContext } from '../context/UserContext'
+import React, { useEffect, useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import { usePlayerContext } from '../context/PlayerContext'
 import GameSettings from '../models/GameSettings'
+import { createGame, getPlayerGamesById } from '../utils/apiClient'
 
 const Home = () => {
   const navigate = useNavigate()
 
-  const { user } = useUserContext()
+  const { player } = usePlayerContext()
+  const [playerGameIdMappings, setPlayerGameIdMappings] = useState([])
 
-  const createGame = async () => {
+  const getAndSetPlayerGames = async () => {
     try {
-      const settings = new GameSettings(2, 4)
-
-      const res = await fetch(`${API_BASE_URL}/api/game`, {
-        method: 'POST',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ user, settings }),
-      })
-      const { ok, game, message } = await res.json()
-      if (!ok) {
-        console.error(message)
+      if (!player) {
         return
       }
+      const res = await getPlayerGamesById(player.id)
+      setPlayerGameIdMappings(res)
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  useEffect(() => {
+    getAndSetPlayerGames()
+  }, [])
+
+  const createGameOnClick = async () => {
+    try {
+      const game = await createGame(player, new GameSettings(2, 4))
       navigate(`/game/${game.id}`)
     } catch (error) {
-      console.log(error)
+      console.error(error)
     }
   }
 
   return (
     <React.Fragment>
-      <h1>Welcome to Jotto, {user ? user.name : 'user not registered'}!</h1>
-      <button onClick={createGame}>Create game</button>
+      <h1>
+        Welcome to Jotto, {player ? player.name : 'player not registered'}!
+      </h1>
+      <button onClick={createGameOnClick}>Create game</button>
+      <p>Current joined games:</p>
+      <ol>
+        {playerGameIdMappings.map(({ gameId }) => (
+          <li key={gameId}>
+            <Link to={`/game/${gameId}`}>{gameId}</Link>
+          </li>
+        ))}
+      </ol>
     </React.Fragment>
   )
 }

@@ -7,15 +7,15 @@ import {
 } from 'unique-names-generator'
 import queryString from 'query-string'
 import { useLocalStorageState } from '../hooks/useLocalStorageState'
-import User from '../models/User'
+import Player from '../models/Player'
 
-const UserContext = createContext(null)
+const PlayerContext = createContext(null)
 
-export const UserProvider = ({ children }) => {
+export const PlayerProvider = ({ children }) => {
   const navigate = useNavigate()
   const location = useLocation()
 
-  const [user, setUser] = useLocalStorageState('JottoUser', null)
+  const [player, setPlayer] = useLocalStorageState('JottoPlayer', null)
   const [randomName] = useState(
     uniqueNamesGenerator({
       dictionaries: [adjectives, animals],
@@ -23,7 +23,7 @@ export const UserProvider = ({ children }) => {
     }),
   )
 
-  const isUserRegistered = () => user && user.id
+  const isPlayerRegistered = () => player && player.id
 
   const redirectUrl = () => {
     if (location.search) {
@@ -34,28 +34,29 @@ export const UserProvider = ({ children }) => {
   }
 
   useEffect(() => {
-    if (!isUserRegistered()) {
-      navigate(`/user?next=${redirectUrl()}`)
+    if (!isPlayerRegistered()) {
+      navigate(`/player?next=${redirectUrl()}`)
       return
     }
     navigate(redirectUrl())
-  }, [user])
+  }, [player])
 
   const updateName = (event) => {
-    setUser(event.target.value)
+    setPlayer(event.target.value)
   }
 
-  const persistUser = (event) => {
+  const persistPlayer = (event) => {
     event.preventDefault()
-    // Transform to User model with UUID and overwrite
-    setUser(new User(user && user !== '' ? user : randomName))
+    // Transform to Player model with UUID and overwrite
+    setPlayer(new Player(player && player !== '' ? player : randomName))
   }
 
   return (
-    <UserContext.Provider value={{ user, randomName, updateName, persistUser }}>
+    <PlayerContext.Provider
+      value={{ player, randomName, updateName, persistPlayer }}>
       {children}
-    </UserContext.Provider>
+    </PlayerContext.Provider>
   )
 }
 
-export const useUserContext = () => useContext(UserContext)
+export const usePlayerContext = () => useContext(PlayerContext)

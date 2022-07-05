@@ -4,23 +4,23 @@ import {
   Route,
   Navigate,
 } from 'react-router-dom'
-import { UserProvider } from './context/UserContext'
+import { PlayerProvider } from './context/PlayerContext'
 
 import Home from './components/Home'
-import RegisterUser from './components/RegisterUser'
+import RegisterPlayer from './components/RegisterPlayer'
 import GameWithSocket from './components/GameWithSocket'
 
 const App = () => {
   return (
     <Router>
-      <UserProvider>
+      <PlayerProvider>
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/user" element={<RegisterUser />} />
+          <Route path="/player" element={<RegisterPlayer />} />
           <Route path="/game/:gameId" element={<GameWithSocket />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
-      </UserProvider>
+      </PlayerProvider>
     </Router>
   )
 }

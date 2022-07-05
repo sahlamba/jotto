@@ -1,39 +1,23 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { API_BASE_URL } from '../constants'
 import { useSocketContext } from '../context/SocketContext'
-import { useUserContext } from '../context/UserContext'
+import { usePlayerContext } from '../context/PlayerContext'
+import { getGameById, joinGame } from '../utils/apiClient'
 
 const Game = () => {
   const navigate = useNavigate()
   let { gameId } = useParams()
 
   const { socket } = useSocketContext()
-  const { user } = useUserContext()
+  const { player } = usePlayerContext()
   const [game, setGame] = useState(null)
 
-  const getGame = async () => {
+  const getAndSetGame = async () => {
     try {
-      if (!gameId) {
-        return
-      }
-      const res = await fetch(`${API_BASE_URL}/api/game?id=${gameId}`, {
-        method: 'GET',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-        },
-      })
-      const { ok, game, message } = await res.json()
-      setGame(() => {
-        if (!ok) {
-          console.error(message)
-          return null
-        }
-        return game
-      })
+      const game = await getGameById(gameId)
+      setGame(game)
     } catch (error) {
-      console.log(error)
+      console.error(error)
     }
   }
 
@@ -41,26 +25,27 @@ const Game = () => {
     if (!gameId || gameId === '') {
       navigate('/')
     }
-    getGame()
+    getAndSetGame()
   }, [])
 
-  useEffect(() => {
-    if (socket) {
-      if (gameId) {
-        socket.emit('join_game', { user, gameId })
-      }
-      return () => {
-        socket.emit('leave_game', { user, gameId })
-      }
+  const joinAndSetGame = async () => {
+    try {
+      const game = await joinGame(gameId, player)
+      setGame(game)
+    } catch (error) {
+      console.log(error)
     }
-  }, [socket, user, gameId])
+  }
 
   return (
     <React.Fragment>
-      <h1>Welcome to Jotto, {user ? user.name : 'user not registered'}!</h1>
+      <h1>
+        Welcome to Jotto, {player ? player.name : 'player not registered'}!
+      </h1>
       {socket ? <pre>Connected with socket ID: {socket.id}</pre> : null}
       <pre>Game ID: {gameId}</pre>
       <pre>{JSON.stringify(game, null, 2)}</pre>
+      <button onClick={joinAndSetGame}>Join this game</button>
     </React.Fragment>
   )
 }
