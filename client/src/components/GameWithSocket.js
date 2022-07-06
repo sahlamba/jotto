@@ -1,3 +1,4 @@
+import React from 'react'
 import { SocketProvider } from '../context/SocketContext'
 import Game from './Game'
 

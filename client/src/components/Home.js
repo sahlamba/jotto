@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { usePlayerContext } from '../context/PlayerContext'
-import GameSettings from '../models/GameSettings'
 import { createGame, getPlayerGamesById } from '../utils/apiClient'
+import GameSettings from '../models/GameSettings'
+import WelcomeMessage from './common/welcome'
 
 const Home = () => {
   const navigate = useNavigate()
@@ -37,9 +38,7 @@ const Home = () => {
 
   return (
     <React.Fragment>
-      <h1>
-        Welcome to Jotto, {player ? player.name : 'player not registered'}!
-      </h1>
+      <WelcomeMessage player={player} />
       <button onClick={createGameOnClick}>Create game</button>
       <p>Current joined games:</p>
       <ol>

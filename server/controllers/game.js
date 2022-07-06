@@ -1,12 +1,16 @@
 import Jotto from '../jotto/index.js'
-import { validatePlayer, validateSettings } from '../utils/validation.js'
+import {
+  validateGameId,
+  validateJottoWord,
+  validatePlayer,
+  validateSettings,
+} from '../utils/validation.js'
 
 export const getGame = (req, res, next) => {
   try {
     const { id } = req.query
-    if (!id) {
-      throw new Error(`Missing game ID, API usage: ?id=<gameId>`)
-    }
+    validateGameId(id)
+
     const game = Jotto.getGame(id)
     res.json({
       ok: true,
@@ -43,6 +47,25 @@ export const joinGame = (req, res, next) => {
     Jotto.joinGame(gameId, player)
     res.json({
       ok: true,
+    })
+  } catch (error) {
+    console.log(error)
+    next(error)
+  }
+}
+
+export const readyPlayer = (req, res, next) => {
+  try {
+    const { gameId, player, jottoWord } = req.body
+    validateGameId(gameId)
+    validatePlayer(player)
+    validateJottoWord(jottoWord)
+
+    Jotto.readyPlayer(gameId, player, jottoWord)
+    const game = Jotto.getGame(gameId)
+    res.json({
+      ok: true,
+      game,
     })
   } catch (error) {
     console.log(error)

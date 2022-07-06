@@ -12,6 +12,10 @@ export default class PlayerState {
     this.guesses = []
   }
 
+  static from(json) {
+    return Object.assign(new PlayerState(), json)
+  }
+
   setWord(word) {
     this.word = word
   }

@@ -19,11 +19,16 @@ export default class Jotto {
     return null
   }
 
-  static joinGame(gameId, player) {
+  static getGameOrThrow(gameId) {
     const game = this.getGame(gameId)
     if (!game) {
       throw new Error(`Could not find game with ID: ${gameId}`)
     }
+    return game
+  }
+
+  static joinGame(gameId, player) {
+    const game = this.getGameOrThrow(gameId)
 
     /*
      * If player has already joined the game,
@@ -32,10 +37,15 @@ export default class Jotto {
     this.db.insertPlayerGame(player, gameId)
 
     game.addPlayer(player)
-    this.db.updateGame(game)
   }
 
   static getPlayerJoinedGames(playerId) {
     return this.db.getPlayerGamesByPlayerId(playerId)
+  }
+
+  static readyPlayer(gameId, player, jottoWord) {
+    const game = this.getGameOrThrow(gameId)
+
+    game.readyPlayer(player, jottoWord)
   }
 }

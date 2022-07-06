@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from 'react'
+import React, { createContext, useContext, useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import {
   uniqueNamesGenerator,
@@ -42,6 +42,7 @@ export const PlayerProvider = ({ children }) => {
   }, [player])
 
   const updateName = (event) => {
+    event.preventDefault()
     setPlayer(event.target.value)
   }
 

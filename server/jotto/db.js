@@ -11,8 +11,14 @@ export default class JottoDatabase {
   constructor() {
     // eslint-disable-next-line new-cap
     this.db = new loki('jotto.db', { adapter: new loki.LokiMemoryAdapter() })
-    this.games = this.db.addCollection('games', { unique: 'id' })
-    this.playerGames = this.db.addCollection('player_games', { unique: 'id' })
+    this.games = this.db.addCollection('games', {
+      unique: 'id',
+      autoupdate: true,
+    })
+    this.playerGames = this.db.addCollection('player_games', {
+      unique: 'id',
+      autoupdate: true,
+    })
 
     // Enable periodic DB logging in local env for debugging
     if (process.env.NODE_ENV !== 'production') {
@@ -44,9 +50,13 @@ export default class JottoDatabase {
     return this.games.find()
   }
 
-  updateGame(game) {
-    this.games.update(this.jsonify(game))
-  }
+  /*
+   * Not required as auto-update is enabled on 'games' collection
+   * See: http://techfort.github.io/LokiJS/tutorial-Autoupdating%20Collections.html
+   */
+  // updateGame(game) {
+  //   this.games.update(this.jsonify(game))
+  // }
 
   deleteGame(gameId) {
     this.games.findAndRemove({ id: gameId })
