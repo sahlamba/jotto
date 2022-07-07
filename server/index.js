@@ -3,7 +3,7 @@ import http from 'http'
 import cors from 'cors'
 import morgan from 'morgan'
 import path from 'path'
-import ioHandler from './io-handler.js'
+import socketIoHandler from './socketio/index.js'
 import routes from './routes/index.js'
 
 const app = express()
@@ -52,4 +52,4 @@ server.listen(port, () => {
   console.log(`Jotto server started at http://localhost:${port}`)
 })
 
-ioHandler(server)
+socketIoHandler(server)

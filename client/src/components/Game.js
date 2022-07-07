@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useSocketContext } from '../context/SocketContext'
 import { usePlayerContext } from '../context/PlayerContext'
-import { getGameById, joinGame, readyPlayer } from '../utils/apiClient'
+import { getGameById, readyPlayer } from '../utils/apiClient'
 import WelcomeMessage from './common/welcome'
 
 const Game = () => {
@@ -42,15 +42,6 @@ const Game = () => {
     getAndSetGame()
   }, [])
 
-  const joinAndSetGame = async () => {
-    try {
-      const game = await joinGame(gameId, player)
-      setGame(game)
-    } catch (error) {
-      console.log(error)
-    }
-  }
-
   const updateJottoWord = (event) => {
     event.preventDefault()
     setJottoWord(event.target.value)
@@ -70,12 +61,29 @@ const Game = () => {
     }
   }
 
+  const joinGame = () => {
+    if (socket && gameId) {
+      socket.emit('join_game', { gameId, player })
+    }
+  }
+
+  useEffect(() => {
+    if (socket) {
+      socket.on('join_game_error', (error) => {
+        alert(`${error.name}: ${error.message}`)
+      })
+      socket.on('player_joined_game', ({ game }) => {
+        setGame(game)
+      })
+    }
+  }, [socket])
+
   return (
     <React.Fragment>
       <WelcomeMessage player={player} socket={socket} />
       <pre>Game::{JSON.stringify(game, null, 2)}</pre>
       {!hasPlayerJoinedGame() ? (
-        <button onClick={joinAndSetGame}>Join this game</button>
+        <button onClick={joinGame}>Join this game</button>
       ) : null}
       {hasPlayerJoinedGame() && !isPlayerReady() ? (
         <form onSubmit={readyPlayerAndRefreshGame}>

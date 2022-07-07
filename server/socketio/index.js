@@ -1,6 +1,7 @@
 import { Server } from 'socket.io'
+import { GameServerEvents } from './listeners.js'
 
-const ioHandler = (httpServer) => {
+const socketIoHandler = (httpServer) => {
   const io = new Server(httpServer, {
     cors: {
       origin: 'http://localhost:3000',
@@ -17,7 +18,14 @@ const ioHandler = (httpServer) => {
       io.totalConnections -= 1
       console.log(`Socket.io DISCONNECT (${io.totalConnections})`)
     })
+
+    // Set up game session event listeners for the server
+    GameServerEvents.forEach((evt) => {
+      socket.on(evt.name, (data) => {
+        evt.listener(io, socket, data)
+      })
+    })
   })
 }
 
-export default ioHandler
+export default socketIoHandler

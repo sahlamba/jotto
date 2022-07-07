@@ -17,7 +17,7 @@ export const getGame = (req, res, next) => {
       game,
     })
   } catch (error) {
-    console.log(error)
+    console.error(error)
     next(error)
   }
 }
@@ -34,22 +34,7 @@ export const createGame = (req, res, next) => {
       game,
     })
   } catch (error) {
-    console.log(error)
-    next(error)
-  }
-}
-
-export const joinGame = (req, res, next) => {
-  try {
-    const { gameId, player } = req.body
-    validatePlayer(player)
-
-    Jotto.joinGame(gameId, player)
-    res.json({
-      ok: true,
-    })
-  } catch (error) {
-    console.log(error)
+    console.error(error)
     next(error)
   }
 }
@@ -68,7 +53,7 @@ export const readyPlayer = (req, res, next) => {
       game,
     })
   } catch (error) {
-    console.log(error)
+    console.error(error)
     next(error)
   }
 }

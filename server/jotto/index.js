@@ -29,14 +29,12 @@ export default class Jotto {
 
   static joinGame(gameId, player) {
     const game = this.getGameOrThrow(gameId)
-
+    game.addPlayer(player)
     /*
      * If player has already joined the game,
      * this method will throw an error (expected behviour).
      */
     this.db.insertPlayerGame(player, gameId)
-
-    game.addPlayer(player)
   }
 
   static getPlayerJoinedGames(playerId) {
