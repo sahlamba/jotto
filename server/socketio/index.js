@@ -21,8 +21,8 @@ const socketIoHandler = (httpServer) => {
 
     // Set up game session event listeners for the server
     GameServerEvents.forEach((evt) => {
-      socket.on(evt.name, (data) => {
-        evt.listener(io, socket, data)
+      socket.on(evt.name, (data, callback) => {
+        evt.listener(io, socket, data, callback)
       })
     })
   })

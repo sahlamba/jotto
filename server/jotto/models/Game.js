@@ -1,7 +1,9 @@
 /* eslint-disable max-len */
 /* eslint-disable require-jsdoc */
-import { v4 as uuidV4 } from 'uuid'
+import { customAlphabet } from 'nanoid'
 import PlayerState from './PlayerState.js'
+
+const nanoid = customAlphabet('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ', 8)
 
 export const GameState = {
   CREATED: 'CREATED',
@@ -11,14 +13,14 @@ export const GameState = {
 }
 
 export default class Game {
-  id // Game session ID: UUID
+  id // Game session ID: nanoid string
   admin // Game admin: Player
   settings // Game settings: GameSettings
   state // Game state: GameState
   players // Players who joined the game: Map<UUID, PlayerState>
 
   constructor(admin, settings) {
-    this.id = uuidV4()
+    this.id = nanoid()
     this.admin = admin
     this.settings = settings
     this.state = GameState.CREATED
@@ -43,14 +45,26 @@ export default class Game {
     playerState.setWord(jottoWord)
     this.players[player.id] = playerState
 
-    if (this.allPlayersAreReady()) {
+    if (this.readyToStartGame()) {
       this.state = GameState.READY_TO_START
     }
   }
 
+  readyToStartGame() {
+    return (
+      this.state === GameState.CREATED &&
+      this.joinedPlayerCount() === this.settings.maxPlayers && // All players have joined
+      this.allPlayersAreReady()
+    )
+  }
+
+  joinedPlayerCount() {
+    return Object.keys(this.players).length
+  }
+
   allPlayersAreReady() {
     return Object.values(this.players).reduce(
-      (currPlayerState, accumulatedIsReady) =>
+      (accumulatedIsReady, currPlayerState) =>
         accumulatedIsReady && currPlayerState.isReady,
       true,
     )
@@ -59,12 +73,12 @@ export default class Game {
   verifyCanAddPlayer() {
     if (this.state !== GameState.CREATED) {
       throw new Error(
-        `Cannot addPlayer, expected game state: ${GameState.CREATED}, actual: ${this.state}`,
+        `Cannot add player, expected game state: ${GameState.CREATED}, actual: ${this.state}`,
       )
     }
     if (Object.keys(this.players).length === this.settings.maxPlayers) {
       throw new Error(
-        `Cannot addPlayer, max players limit (${this.settings.maxPlayers}) reached`,
+        `Cannot add player, max players limit (${this.settings.maxPlayers}) reached`,
       )
     }
   }
@@ -72,7 +86,7 @@ export default class Game {
   verifyCanReadyPlayer(player) {
     if (this.state !== GameState.CREATED) {
       throw new Error(
-        `Cannot readyPlayer, expected game state: ${GameState.CREATED}, actual: ${this.state}`,
+        `Cannot ready player, expected game state: ${GameState.CREATED}, actual: ${this.state}`,
       )
     }
     if (!this.players[player.id]) {

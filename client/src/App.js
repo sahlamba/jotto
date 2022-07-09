@@ -8,7 +8,7 @@ import { PlayerProvider } from './context/PlayerContext'
 
 import Home from './components/Home'
 import RegisterPlayer from './components/RegisterPlayer'
-import GameWithSocket from './components/GameWithSocket'
+import Game from './components/Game'
 
 const App = () => {
   return (
@@ -17,7 +17,7 @@ const App = () => {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/player" element={<RegisterPlayer />} />
-          <Route path="/game/:gameId" element={<GameWithSocket />} />
+          <Route path="/game/:gameId" element={<Game />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </PlayerProvider>

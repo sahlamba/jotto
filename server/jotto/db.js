@@ -34,7 +34,7 @@ export default class JottoDatabase {
           allGames.data(renderOptions),
           playerGames.data(renderOptions),
         )
-      }, 3000)
+      }, 10000)
     }
   }
 
@@ -50,13 +50,9 @@ export default class JottoDatabase {
     return this.games.find()
   }
 
-  /*
-   * Not required as auto-update is enabled on 'games' collection
-   * See: http://techfort.github.io/LokiJS/tutorial-Autoupdating%20Collections.html
-   */
-  // updateGame(game) {
-  //   this.games.update(this.jsonify(game))
-  // }
+  updateGame(game) {
+    this.games.update(this.jsonify(game))
+  }
 
   deleteGame(gameId) {
     this.games.findAndRemove({ id: gameId })

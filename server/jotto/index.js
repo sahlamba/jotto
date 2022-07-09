@@ -30,6 +30,7 @@ export default class Jotto {
   static joinGame(gameId, player) {
     const game = this.getGameOrThrow(gameId)
     game.addPlayer(player)
+    this.db.updateGame(game)
     /*
      * If player has already joined the game,
      * this method will throw an error (expected behviour).
@@ -43,7 +44,7 @@ export default class Jotto {
 
   static readyPlayer(gameId, player, jottoWord) {
     const game = this.getGameOrThrow(gameId)
-
     game.readyPlayer(player, jottoWord)
+    this.db.updateGame(game)
   }
 }
