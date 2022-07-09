@@ -6,10 +6,10 @@ export const getPlayerGames = (req, res, next) => {
     if (!playerId) {
       throw new Error('Missin player ID, API usage: ?playerId=<playerId>')
     }
-    const playerGameIdMappings = Jotto.getPlayerJoinedGames(playerId)
+    const playerGameCodeMappings = Jotto.getPlayerJoinedGames(playerId)
     res.json({
       ok: true,
-      playerGameIdMappings,
+      playerGameCodeMappings,
     })
   } catch (error) {
     console.log(error)

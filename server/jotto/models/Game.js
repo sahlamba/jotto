@@ -13,14 +13,14 @@ export const GameState = {
 }
 
 export default class Game {
-  id // Game session ID: nanoid string
+  code // Game session code: nanoid string
   admin // Game admin: Player
   settings // Game settings: GameSettings
   state // Game state: GameState
   players // Players who joined the game: Map<UUID, PlayerState>
 
   constructor(admin, settings) {
-    this.id = nanoid()
+    this.code = nanoid()
     this.admin = admin
     this.settings = settings
     this.state = GameState.CREATED

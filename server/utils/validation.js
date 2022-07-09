@@ -1,6 +1,6 @@
-export const validateGameId = (id) => {
-  if (!id || id.length === 0) {
-    throw new Error(`Missing game ID`)
+export const validateGameCode = (code) => {
+  if (!code || code.length === 0) {
+    throw new Error(`Missing game code`)
   }
 }
 

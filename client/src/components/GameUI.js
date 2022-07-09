@@ -2,11 +2,11 @@ import React, { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { usePlayerContext } from '../context/PlayerContext'
 import { useGameContext } from '../context/GameContext'
-import WelcomeMessage from './common/welcome'
+import Header from './common/Header'
 
 const GameUI = () => {
   const navigate = useNavigate()
-  const { gameId } = useParams()
+  const { gameCode } = useParams()
 
   const { player } = usePlayerContext()
   const {
@@ -24,28 +24,28 @@ const GameUI = () => {
   const [jottoWord, setJottoWord] = useState('')
 
   useEffect(() => {
-    if (!gameId || gameId === '') {
+    if (!gameCode || gameCode === '') {
       navigate('/')
     }
-    connectPlayer(gameId)
-    return () => disconnectPlayer(gameId)
-  }, [socket, gameId])
+    connectPlayer(gameCode)
+    return () => disconnectPlayer(gameCode)
+  }, [socket, gameCode])
 
   const updateJottoWord = (evt) => {
     evt.preventDefault()
     setJottoWord(evt.target.value)
   }
 
-  const joinGameOnCLick = () => joinGame(game.id, player)
+  const joinGameOnCLick = () => joinGame(game.code, player)
 
   const readyPlayerOnClick = (evt) => {
     evt.preventDefault()
-    readyPlayer(game.id, player, jottoWord)
+    readyPlayer(game.code, player, jottoWord)
   }
 
   return (
     <React.Fragment>
-      <WelcomeMessage player={player} socket={socket} />
+      <Header player={player} socket={socket} />
       <pre>Game::{JSON.stringify(game, null, 2)}</pre>
       {!hasPlayerJoinedGame() ? (
         <button onClick={joinGameOnCLick}>Join this game</button>

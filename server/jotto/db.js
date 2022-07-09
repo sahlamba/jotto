@@ -12,7 +12,7 @@ export default class JottoDatabase {
     // eslint-disable-next-line new-cap
     this.db = new loki('jotto.db', { adapter: new loki.LokiMemoryAdapter() })
     this.games = this.db.addCollection('games', {
-      unique: 'id',
+      unique: 'code',
       autoupdate: true,
     })
     this.playerGames = this.db.addCollection('player_games', {
@@ -42,8 +42,8 @@ export default class JottoDatabase {
     this.games.insert(this.jsonify(game))
   }
 
-  getGameById(gameId) {
-    return this.games.findOne({ id: gameId })
+  getGameById(gameCode) {
+    return this.games.findOne({ code: gameCode })
   }
 
   getAllGames() {
@@ -54,13 +54,13 @@ export default class JottoDatabase {
     this.games.update(this.jsonify(game))
   }
 
-  deleteGame(gameId) {
-    this.games.findAndRemove({ id: gameId })
+  deleteGame(gameCode) {
+    this.games.findAndRemove({ code: gameCode })
   }
 
-  insertPlayerGame(player, gameId) {
-    const id = `${player.id}:${gameId}`
-    this.playerGames.insert(this.jsonify({ id, playerId: player.id, gameId }))
+  insertPlayerGame(player, gameCode) {
+    const id = `${player.id}:${gameCode}`
+    this.playerGames.insert(this.jsonify({ id, playerId: player.id, gameCode }))
   }
 
   getPlayerGamesByPlayerId(playerId) {

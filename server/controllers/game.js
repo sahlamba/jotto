@@ -1,16 +1,16 @@
 import Jotto from '../jotto/index.js'
 import {
-  validateGameId,
+  validateGameCode,
   validatePlayer,
   validateSettings,
 } from '../utils/validation.js'
 
 export const getGame = (req, res, next) => {
   try {
-    const { id } = req.query
-    validateGameId(id)
+    const { code } = req.query
+    validateGameCode(code)
 
-    const game = Jotto.getGame(id)
+    const game = Jotto.getGame(code)
     res.json({
       ok: true,
       game,

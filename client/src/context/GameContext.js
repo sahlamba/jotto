@@ -12,42 +12,42 @@ export const GameProvider = ({ children }) => {
   const [socket, setSocket] = useState(null)
   const [game, setGame] = useState(null)
 
-  const getAndSetGame = async (gameId) => {
+  const getAndSetGame = async (gameCode) => {
     try {
-      const game = await getGameById(gameId)
+      const game = await getGameById(gameCode)
       setGame(game)
     } catch (error) {
       console.error(error)
     }
   }
 
-  const connectPlayer = (gameId) => {
-    if (socket && gameId) {
-      socket.emit('connect_player', { gameId, player }, () => {
-        getAndSetGame(gameId)
+  const connectPlayer = (gameCode) => {
+    if (socket && gameCode) {
+      socket.emit('connect_player', { gameCode, player }, () => {
+        getAndSetGame(gameCode)
       })
     }
   }
 
-  const disconnectPlayer = (gameId) => {
-    if (socket && gameId) {
-      socket.emit('disconnect_player', { gameId, player })
+  const disconnectPlayer = (gameCode) => {
+    if (socket && gameCode) {
+      socket.emit('disconnect_player', { gameCode, player })
     }
   }
 
-  const joinGame = (gameId, player) => {
-    if (socket && gameId) {
-      socket.emit('join_game', { gameId, player })
+  const joinGame = (gameCode, player) => {
+    if (socket && gameCode) {
+      socket.emit('join_game', { gameCode, player })
     }
   }
 
-  const readyPlayer = (gameId, player, jottoWord) => {
+  const readyPlayer = (gameCode, player, jottoWord) => {
     if (jottoWord.length > game.settings.maxWordLength) {
       console.error(`Maximum word length is ${game.settings.maxWordLength}`)
       return
     }
-    if (socket && gameId) {
-      socket.emit('ready_player', { gameId, player, jottoWord })
+    if (socket && gameCode) {
+      socket.emit('ready_player', { gameCode, player, jottoWord })
     }
   }
 

@@ -1,6 +1,6 @@
 import Jotto from '../jotto/index.js'
 import {
-  validateGameId,
+  validateGameCode,
   validateJottoWord,
   validatePlayer,
 } from '../utils/validation.js'
@@ -12,12 +12,12 @@ const errorInstanceToJson = (error) => {
   }
 }
 
-const onPlayerConnected = (_io, _socket, { gameId, player }, callback) => {
+const onPlayerConnected = (_io, _socket, { gameCode, player }, callback) => {
   try {
-    validateGameId(gameId)
+    validateGameCode(gameCode)
     validatePlayer(player)
 
-    _socket.join(gameId)
+    _socket.join(gameCode)
 
     callback()
   } catch (error) {
@@ -25,43 +25,43 @@ const onPlayerConnected = (_io, _socket, { gameId, player }, callback) => {
   }
 }
 
-const onPlayerDisconnected = (_io, _socket, { gameId, player }) => {
+const onPlayerDisconnected = (_io, _socket, { gameCode, player }) => {
   try {
-    validateGameId(gameId)
+    validateGameCode(gameCode)
     validatePlayer(player)
 
-    _socket.leave(gameId)
+    _socket.leave(gameCode)
   } catch (error) {
     console.error(errorInstanceToJson(error))
   }
 }
 
-const onPlayerJoinsGame = (_io, _socket, { gameId, player }) => {
+const onPlayerJoinsGame = (_io, _socket, { gameCode, player }) => {
   try {
-    validateGameId(gameId)
+    validateGameCode(gameCode)
     validatePlayer(player)
 
-    Jotto.joinGame(gameId, player)
+    Jotto.joinGame(gameCode, player)
 
-    _socket.join(gameId)
+    _socket.join(gameCode)
     _io
-      .to(gameId)
-      .emit('player_joined_game', { gameState: Jotto.getGame(gameId) })
+      .to(gameCode)
+      .emit('player_joined_game', { gameState: Jotto.getGame(gameCode) })
   } catch (error) {
     _socket.emit('join_game_error', errorInstanceToJson(error))
   }
 }
 
-const onPlayerReady = (_io, _socket, { gameId, player, jottoWord }) => {
+const onPlayerReady = (_io, _socket, { gameCode, player, jottoWord }) => {
   try {
-    validateGameId(gameId)
+    validateGameCode(gameCode)
     validatePlayer(player)
     validateJottoWord(jottoWord)
 
-    Jotto.readyPlayer(gameId, player, jottoWord)
+    Jotto.readyPlayer(gameCode, player, jottoWord)
 
-    _io.to(gameId).emit('player_ready_in_game', {
-      gameState: Jotto.getGame(gameId),
+    _io.to(gameCode).emit('player_ready_in_game', {
+      gameState: Jotto.getGame(gameCode),
       player,
     })
   } catch (error) {

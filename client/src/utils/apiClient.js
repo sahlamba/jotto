@@ -24,10 +24,10 @@ export const createGame = (player, settings) => {
   })
 }
 
-export const getGameById = (gameId) => {
+export const getGameById = (gameCode) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const res = await fetch(`${API_BASE_URL}/api/game?id=${gameId}`, {
+      const res = await fetch(`${API_BASE_URL}/api/game?code=${gameCode}`, {
         method: 'GET',
         headers,
       })
@@ -52,11 +52,11 @@ export const getPlayerGamesById = (playerId) => {
           headers,
         },
       )
-      const { ok, playerGameIdMappings, message } = await res.json()
+      const { ok, playerGameCodeMappings, message } = await res.json()
       if (!ok) {
         reject(message)
       }
-      resolve(playerGameIdMappings)
+      resolve(playerGameCodeMappings)
     } catch (error) {
       reject(error)
     }
