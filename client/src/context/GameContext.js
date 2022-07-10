@@ -11,19 +11,33 @@ export const GameProvider = ({ children }) => {
 
   const [socket, setSocket] = useState(null)
   const [game, setGame] = useState(null)
+  const [loadingGame, setLoadingGame] = useState({
+    status: true,
+    message: '',
+  })
+  const [joiningGame, setJoiningGame] = useState(false)
+  const [readyingPlayer, setReadyingPlayer] = useState(false)
 
   const getAndSetGame = async (gameCode) => {
+    setLoadingGame({ status: true, message: 'Loading game' })
     try {
       const game = await getGameById(gameCode)
       setGame(game)
     } catch (error) {
       console.error(error)
     }
+    setLoadingGame({ status: false, message: '' })
   }
 
   const connectPlayer = (gameCode) => {
     if (socket && gameCode) {
-      socket.emit('connect_player', { gameCode, player }, () => {
+      setLoadingGame({ status: true, message: 'Connecting player' })
+      socket.emit('connect_player', { gameCode, player }, (err) => {
+        setLoadingGame({ status: false, message: '' })
+        if (err) {
+          console.error(err)
+          return
+        }
         getAndSetGame(gameCode)
       })
     }
@@ -37,7 +51,13 @@ export const GameProvider = ({ children }) => {
 
   const joinGame = (gameCode, player) => {
     if (socket && gameCode) {
-      socket.emit('join_game', { gameCode, player })
+      setJoiningGame(true)
+      socket.emit('join_game', { gameCode, player }, (err) => {
+        setJoiningGame(false)
+        if (err) {
+          console.error(`${err.name}: ${err.message}`)
+        }
+      })
     }
   }
 
@@ -47,7 +67,13 @@ export const GameProvider = ({ children }) => {
       return
     }
     if (socket && gameCode) {
-      socket.emit('ready_player', { gameCode, player, jottoWord })
+      setReadyingPlayer(true)
+      socket.emit('ready_player', { gameCode, player, jottoWord }, (err) => {
+        setReadyingPlayer(false)
+        if (err) {
+          console.error(`${err.name}: ${err.message}`)
+        }
+      })
     }
   }
 
@@ -74,10 +100,6 @@ export const GameProvider = ({ children }) => {
       setSocket(null)
     })
 
-    socketListener.on('join_game_error', (error) => {
-      console.error(`${error.name}: ${error.message}`)
-    })
-
     socketListener.on('player_joined_game', ({ gameState }) => {
       setGame(gameState)
     })
@@ -94,10 +116,13 @@ export const GameProvider = ({ children }) => {
       value={{
         socket,
         game,
+        loadingGame,
         connectPlayer,
         disconnectPlayer,
         joinGame,
+        joiningGame,
         readyPlayer,
+        readyingPlayer,
         hasPlayerJoinedGame,
         isPlayerReady,
         playerJottoWord,

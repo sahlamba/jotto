@@ -33,28 +33,38 @@ export const PlayerProvider = ({ children }) => {
     return location.pathname
   }
 
-  useEffect(() => {
+  const verifyPlayerOrRedirect = () => {
     if (!isPlayerRegistered()) {
       navigate(`/player?next=${redirectUrl()}`)
       return
     }
     navigate(redirectUrl())
-  }, [player])
-
-  const updateName = (event) => {
-    event.preventDefault()
-    setPlayer(event.target.value)
   }
 
-  const persistPlayer = (event) => {
-    event.preventDefault()
+  useEffect(() => {
+    verifyPlayerOrRedirect()
+  }, [player])
+
+  const updateName = (evt) => {
+    evt.preventDefault()
+    setPlayer(evt.target.value)
+  }
+
+  const persistPlayer = (evt) => {
+    evt.preventDefault()
     // Transform to Player model with UUID and overwrite
     setPlayer(new Player(player && player !== '' ? player : randomName))
   }
 
   return (
     <PlayerContext.Provider
-      value={{ player, randomName, updateName, persistPlayer }}>
+      value={{
+        player,
+        verifyPlayerOrRedirect,
+        randomName,
+        updateName,
+        persistPlayer,
+      }}>
       {children}
     </PlayerContext.Provider>
   )

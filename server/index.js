@@ -35,6 +35,12 @@ if (process.env.NODE_ENV === 'production') {
     )
   })
 
+  // Delay responses for production simulation (network latency)
+  // app.use(async (req, res, next) => {
+  //   await new Promise((resolve) => setTimeout(resolve, 3000))
+  //   next()
+  // })
+
   // Connect all routes
   app.use(routes)
 }

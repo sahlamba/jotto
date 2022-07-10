@@ -6,4 +6,8 @@ export default class GameSettings {
     this.maxPlayers = maxPlayers
     this.wordLength = wordLength
   }
+
+  static from(json) {
+    return Object.assign(new GameSettings(), json)
+  }
 }

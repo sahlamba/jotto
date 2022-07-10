@@ -36,7 +36,7 @@ const onPlayerDisconnected = (_io, _socket, { gameCode, player }) => {
   }
 }
 
-const onPlayerJoinsGame = (_io, _socket, { gameCode, player }) => {
+const onPlayerJoinsGame = (_io, _socket, { gameCode, player }, callback) => {
   try {
     validateGameCode(gameCode)
     validatePlayer(player)
@@ -47,12 +47,18 @@ const onPlayerJoinsGame = (_io, _socket, { gameCode, player }) => {
     _io
       .to(gameCode)
       .emit('player_joined_game', { gameState: Jotto.getGame(gameCode) })
+    callback()
   } catch (error) {
-    _socket.emit('join_game_error', errorInstanceToJson(error))
+    callback(errorInstanceToJson(error))
   }
 }
 
-const onPlayerReady = (_io, _socket, { gameCode, player, jottoWord }) => {
+const onPlayerReady = (
+  _io,
+  _socket,
+  { gameCode, player, jottoWord },
+  callback,
+) => {
   try {
     validateGameCode(gameCode)
     validatePlayer(player)
@@ -64,8 +70,9 @@ const onPlayerReady = (_io, _socket, { gameCode, player, jottoWord }) => {
       gameState: Jotto.getGame(gameCode),
       player,
     })
+    callback()
   } catch (error) {
-    _socket.emit('ready_player_error', errorInstanceToJson(error))
+    callback(errorInstanceToJson(error))
   }
 }
 

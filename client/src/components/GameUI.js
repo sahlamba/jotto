@@ -1,27 +1,73 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { usePlayerContext } from '../context/PlayerContext'
 import { useGameContext } from '../context/GameContext'
 import Header from './common/Header'
+import GameDetails from './GameDetails'
+import JottoWordInput from './JottoWordInput'
+import { Button, Flex, Spinner, Text } from '@chakra-ui/react'
+import { CheckIcon } from '@chakra-ui/icons'
+
+const GameContent = () => {
+  const { player } = usePlayerContext()
+  const {
+    game,
+    loadingGame,
+    joinGame,
+    joiningGame,
+    readyPlayer,
+    readyingPlayer,
+    hasPlayerJoinedGame,
+  } = useGameContext()
+
+  if (!loadingGame.status && !game) {
+    return (
+      <Flex my={8} align="center" justifyContent="center">
+        No game found!
+      </Flex>
+    )
+  }
+
+  const joinGameOnCLick = () => joinGame(game.code, player)
+
+  const readyPlayerOnSubmit = ({ jottoWord }) => {
+    readyPlayer(game.code, player, jottoWord)
+  }
+
+  return (
+    <React.Fragment>
+      <GameDetails game={game} />
+      {!hasPlayerJoinedGame() ? (
+        <Flex align="center" justifyContent="center">
+          <Button
+            colorScheme="purple"
+            variant="solid"
+            rightIcon={<CheckIcon />}
+            onClick={joinGameOnCLick}
+            isLoading={joiningGame}>
+            Join this game
+          </Button>
+        </Flex>
+      ) : null}
+      <JottoWordInput
+        onSubmit={readyPlayerOnSubmit}
+        isLoading={readyingPlayer}
+      />
+    </React.Fragment>
+  )
+}
 
 const GameUI = () => {
   const navigate = useNavigate()
   const { gameCode } = useParams()
 
-  const { player } = usePlayerContext()
-  const {
-    socket,
-    game,
-    connectPlayer,
-    disconnectPlayer,
-    joinGame,
-    readyPlayer,
-    hasPlayerJoinedGame,
-    isPlayerReady,
-    playerJottoWord,
-  } = useGameContext()
+  const { player, verifyPlayerOrRedirect } = usePlayerContext()
+  const { socket, loadingGame, connectPlayer, disconnectPlayer } =
+    useGameContext()
 
-  const [jottoWord, setJottoWord] = useState('')
+  useEffect(() => {
+    verifyPlayerOrRedirect()
+  }, [])
 
   useEffect(() => {
     if (!gameCode || gameCode === '') {
@@ -31,40 +77,17 @@ const GameUI = () => {
     return () => disconnectPlayer(gameCode)
   }, [socket, gameCode])
 
-  const updateJottoWord = (evt) => {
-    evt.preventDefault()
-    setJottoWord(evt.target.value)
-  }
-
-  const joinGameOnCLick = () => joinGame(game.code, player)
-
-  const readyPlayerOnClick = (evt) => {
-    evt.preventDefault()
-    readyPlayer(game.code, player, jottoWord)
-  }
-
   return (
     <React.Fragment>
       <Header player={player} socket={socket} />
-      <pre>Game::{JSON.stringify(game, null, 2)}</pre>
-      {!hasPlayerJoinedGame() ? (
-        <button onClick={joinGameOnCLick}>Join this game</button>
-      ) : null}
-      {hasPlayerJoinedGame() && !isPlayerReady() ? (
-        <form onSubmit={readyPlayerOnClick}>
-          <label htmlFor="player-jotto-word">Jotto word: </label>
-          <input
-            id="player-jotto-word"
-            value={jottoWord ? jottoWord : ''}
-            onChange={updateJottoWord}
-            type="text"
-          />
-          <button type="submit">Ready</button>
-        </form>
-      ) : null}
-      {isPlayerReady() ? (
-        <p>Player ready with word: {playerJottoWord()}</p>
-      ) : null}
+      {loadingGame.status ? (
+        <Flex my={8} align="center" justifyContent="center">
+          <Text>{loadingGame.message}</Text>
+          <Spinner ml={2} />
+        </Flex>
+      ) : (
+        <GameContent />
+      )}
     </React.Fragment>
   )
 }
