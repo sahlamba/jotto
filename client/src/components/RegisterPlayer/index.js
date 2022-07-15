@@ -1,5 +1,5 @@
 import React from 'react'
-import Header from './common/Header'
+import Header from '../Header'
 import PlayerNameInput from './PlayerNameInput'
 
 const RegisterPlayer = () => {

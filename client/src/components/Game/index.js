@@ -1,5 +1,7 @@
 import React from 'react'
-import { GameProvider } from '../context/GameContext'
+
+import { GameProvider } from '../../context/GameContext'
+
 import GameUI from './GameUI'
 
 const Game = () => {

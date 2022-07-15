@@ -9,7 +9,7 @@ import {
   InputRightElement,
 } from '@chakra-ui/react'
 import { ArrowRightIcon } from '@chakra-ui/icons'
-import { usePlayerContext } from '../context/PlayerContext'
+import { usePlayerContext } from '../../context/PlayerContext'
 
 const PlayerNameInput = () => {
   const { player, randomName, updateName, persistPlayer } = usePlayerContext()

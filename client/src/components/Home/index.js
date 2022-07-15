@@ -1,11 +1,15 @@
 import React, { useEffect, useState } from 'react'
 import { Link as RouterLink, useNavigate } from 'react-router-dom'
-import { Flex, Heading, List, ListItem, Link } from '@chakra-ui/react'
+import { Flex, Heading, List, ListItem, Link, useToast } from '@chakra-ui/react'
 import { ExternalLinkIcon } from '@chakra-ui/icons'
-import { usePlayerContext } from '../context/PlayerContext'
-import { createGame, getPlayerGamesById } from '../utils/apiClient'
-import GameSettings from '../models/GameSettings'
-import Header from './common/Header'
+
+import GameSettings from '../../models/GameSettings'
+import { usePlayerContext } from '../../context/PlayerContext'
+
+import { createGame, getPlayerGamesById } from '../../utils/apiClient'
+import { notify } from '../../utils/ui'
+
+import Header from '../Header'
 import JoinGameInput from './JoinGameInput'
 import CreateGameInput from './CreateGameInput'
 
@@ -16,6 +20,8 @@ const Home = () => {
   const [playerGameCodeMappings, setPlayerGameCodeMappings] = useState([])
   const [isCreatingGame, setIsCreatingGame] = useState(false)
 
+  const toast = useToast()
+
   const getAndSetPlayerGames = async () => {
     try {
       if (!player) {
@@ -24,7 +30,7 @@ const Home = () => {
       const res = await getPlayerGamesById(player.id)
       setPlayerGameCodeMappings(res)
     } catch (error) {
-      console.error(error)
+      notify(toast, { title: error, status: 'error' })
     }
   }
 
@@ -43,7 +49,7 @@ const Home = () => {
       const game = await createGame(player, GameSettings.from(gameSettings))
       navigate(`/game/${game.code}`)
     } catch (error) {
-      console.error(error)
+      notify(toast, { title: error, status: 'error' })
     }
     setIsCreatingGame(false)
   }

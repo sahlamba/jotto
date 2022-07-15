@@ -1,8 +1,12 @@
 import React, { createContext, useContext, useEffect, useState } from 'react'
 import { io } from 'socket.io-client'
+import { useToast } from '@chakra-ui/react'
+
 import { API_BASE_URL } from '../constants'
-import { getGameById } from '../utils/apiClient'
 import { usePlayerContext } from './PlayerContext'
+
+import { getGameById } from '../utils/apiClient'
+import { notify } from '../utils/ui'
 
 const GameContext = createContext(null)
 
@@ -18,13 +22,15 @@ export const GameProvider = ({ children }) => {
   const [joiningGame, setJoiningGame] = useState(false)
   const [readyingPlayer, setReadyingPlayer] = useState(false)
 
+  const toast = useToast()
+
   const getAndSetGame = async (gameCode) => {
     setLoadingGame({ status: true, message: 'Loading game' })
     try {
       const game = await getGameById(gameCode)
       setGame(game)
     } catch (error) {
-      console.error(error)
+      notify(toast, { title: error, status: 'error' })
     }
     setLoadingGame({ status: false, message: '' })
   }
@@ -35,7 +41,7 @@ export const GameProvider = ({ children }) => {
       socket.emit('connect_player', { gameCode, player }, (err) => {
         setLoadingGame({ status: false, message: '' })
         if (err) {
-          console.error(err)
+          notify(toast, { title: err.message, status: 'error' })
           return
         }
         getAndSetGame(gameCode)
@@ -55,7 +61,7 @@ export const GameProvider = ({ children }) => {
       socket.emit('join_game', { gameCode, player }, (err) => {
         setJoiningGame(false)
         if (err) {
-          console.error(`${err.name}: ${err.message}`)
+          notify(toast, { title: err.message, status: 'error' })
         }
       })
     }
@@ -63,7 +69,10 @@ export const GameProvider = ({ children }) => {
 
   const readyPlayer = (gameCode, player, jottoWord) => {
     if (jottoWord.length > game.settings.maxWordLength) {
-      console.error(`Maximum word length is ${game.settings.maxWordLength}`)
+      notify(toast, {
+        title: `Maximum word length is ${game.settings.maxWordLength}`,
+        status: 'error',
+      })
       return
     }
     if (socket && gameCode) {
@@ -71,22 +80,24 @@ export const GameProvider = ({ children }) => {
       socket.emit('ready_player', { gameCode, player, jottoWord }, (err) => {
         setReadyingPlayer(false)
         if (err) {
-          console.error(`${err.name}: ${err.message}`)
+          notify(toast, { title: err.message, status: 'error' })
         }
       })
     }
   }
 
-  const hasPlayerJoinedGame = () => {
-    return game && game.players && game.players[player.id]
+  const hasPlayerJoinedGame = (player) => {
+    return player && game && game.players && game.players[player.id]
   }
 
-  const isPlayerReady = () => {
-    return hasPlayerJoinedGame() && game.players[player.id].isReady
+  const isPlayerReady = (player) => {
+    return (
+      player && hasPlayerJoinedGame(player) && game.players[player.id].isReady
+    )
   }
 
-  const playerJottoWord = () => {
-    return isPlayerReady() ? game.players[player.id].word : null
+  const playerJottoWord = (player) => {
+    return player && isPlayerReady(player) ? game.players[player.id].word : null
   }
 
   useEffect(() => {
@@ -126,6 +137,7 @@ export const GameProvider = ({ children }) => {
         hasPlayerJoinedGame,
         isPlayerReady,
         playerJottoWord,
+        notify,
       }}>
       {children}
     </GameContext.Provider>
