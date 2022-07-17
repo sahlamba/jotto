@@ -83,13 +83,11 @@ const PlayersInGame = () => {
 
 const GameDetails = () => {
   return (
-    <React.Fragment>
-      <Flex my={4} alignItems="baseline" justifyContent="center">
-        <GameCode />
-        <PlayerJottoWord />
-        <PlayersInGame />
-      </Flex>
-    </React.Fragment>
+    <Flex mt={4} mb={8} alignItems="baseline" justifyContent="center">
+      <GameCode />
+      <PlayerJottoWord />
+      <PlayersInGame />
+    </Flex>
   )
 }
 

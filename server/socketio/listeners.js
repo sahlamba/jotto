@@ -91,6 +91,29 @@ const onStartGame = (_io, _socket, { gameCode }, callback) => {
   }
 }
 
+const onGuessWord = (
+  _io,
+  _socket,
+  { gameCode, guesser, opponent, word },
+  callback,
+) => {
+  try {
+    validateGameCode(gameCode)
+    validatePlayer(guesser)
+    validatePlayer(opponent)
+    validateJottoWord(word)
+
+    Jotto.guessPlayerWord(gameCode, guesser, opponent, word)
+
+    _io.to(gameCode).emit('player_guessed_word', {
+      gameState: Jotto.getGame(gameCode),
+    })
+    callback()
+  } catch (error) {
+    callback(errorInstanceToJson(error))
+  }
+}
+
 export const GameServerEvents = [
   {
     name: 'connect_player',
@@ -111,5 +134,9 @@ export const GameServerEvents = [
   {
     name: 'start_game',
     listener: onStartGame,
+  },
+  {
+    name: 'guess_word',
+    listener: onGuessWord,
   },
 ]

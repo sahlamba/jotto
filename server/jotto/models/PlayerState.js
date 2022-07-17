@@ -3,7 +3,7 @@ export default class PlayerState {
   player // Game player: Player
   word // Player's word: string
   isReady // Is player ready?: boolean
-  guesses // Player's guessed words: string[]
+  guesses // Player's guessed words with results: GuessResult[]
 
   constructor(player) {
     this.player = player
@@ -24,7 +24,7 @@ export default class PlayerState {
     this.isReady = true
   }
 
-  addGuess(guessWord) {
-    this.guesses.push[guessWord]
+  addGuess(guessResult) {
+    this.guesses.push(guessResult)
   }
 }

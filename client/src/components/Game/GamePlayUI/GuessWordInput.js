@@ -10,38 +10,38 @@ import {
   InputRightElement,
   useToast,
 } from '@chakra-ui/react'
-import { CheckIcon } from '@chakra-ui/icons'
 
 import { useGameContext } from '../../../context/GameContext'
 
 import { notify } from '../../../utils/ui'
 
-const JottoWordInput = ({ onSubmit, isLoading }) => {
-  const { game } = useGameContext()
+const GuessWordInput = ({ onSubmit, isLoading }) => {
+  const { game, isGameOver } = useGameContext()
 
-  const validJottoWordDescription = `Word should have ${game.settings.wordLength} letters.`
+  const validGuessWordDescription = `Word should have ${game.settings.wordLength} letters.`
 
-  const [jottoWord, setJottoWord] = useState('')
+  const [guessWord, setGuessWord] = useState('')
 
   const toast = useToast()
 
-  const updateJottoWord = (evt) => {
+  const updateGuessWord = (evt) => {
     evt.preventDefault()
-    setJottoWord(evt.target.value ? evt.target.value.toUpperCase() : '')
+    setGuessWord(evt.target.value ? evt.target.value.toUpperCase() : '')
   }
 
-  const isValidJottoWord = () => {
-    return jottoWord && jottoWord.length === game.settings.wordLength
+  const isValidGuessWord = () => {
+    return guessWord && guessWord.length === game.settings.wordLength
   }
 
   const submit = (evt) => {
     evt.preventDefault()
-    if (isValidJottoWord()) {
-      onSubmit({ jottoWord })
+    if (isValidGuessWord()) {
+      setGuessWord('')
+      onSubmit({ guessWord })
     } else {
       notify(toast, {
         title: 'Invalid word!',
-        description: validJottoWordDescription,
+        description: validGuessWordDescription,
         status: 'error',
       })
     }
@@ -51,19 +51,21 @@ const JottoWordInput = ({ onSubmit, isLoading }) => {
     <Flex maxW="100%" alignItems="center" justifyContent="center">
       <form onSubmit={submit}>
         <FormControl>
-          <FormLabel htmlFor="jotto-word">Jotto Word</FormLabel>
+          <FormLabel htmlFor="jotto-word">Guess opponent's word</FormLabel>
           <InputGroup size="lg">
             <Input
+              disabled={isGameOver()}
               id="jotto-word"
               w="20rem"
               maxW="100%"
               size="lg"
               placeholder={`Enter ${game.settings.wordLength} letter word`}
-              value={jottoWord ? jottoWord : ''}
-              onChange={updateJottoWord}
-              isInvalid={jottoWord && !isValidJottoWord()}
+              value={guessWord ? guessWord : ''}
+              onChange={updateGuessWord}
+              isInvalid={guessWord && !isValidGuessWord()}
               errorBorderColor="crimson"
               autoComplete="off"
+              autoFocus
             />
             <InputRightElement width="auto">
               <Button
@@ -71,15 +73,14 @@ const JottoWordInput = ({ onSubmit, isLoading }) => {
                 size="lg"
                 colorScheme="green"
                 variant="solid"
-                rightIcon={<CheckIcon />}
                 isLoading={isLoading}>
-                Ready
+                Guess?
               </Button>
             </InputRightElement>
           </InputGroup>
-          {jottoWord && !isValidJottoWord() ? (
+          {guessWord && !isValidGuessWord() ? (
             <FormHelperText textAlign="center">
-              {validJottoWordDescription}
+              {validGuessWordDescription}
             </FormHelperText>
           ) : null}
         </FormControl>
@@ -88,4 +89,4 @@ const JottoWordInput = ({ onSubmit, isLoading }) => {
   )
 }
 
-export default JottoWordInput
+export default GuessWordInput

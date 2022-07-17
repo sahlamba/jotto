@@ -55,6 +55,8 @@ const JoinGameInput = ({ onSubmit }) => {
               onChange={updateGameCode}
               isInvalid={gameCode && !isValidGameCode()}
               errorBorderColor="crimson"
+              autoComplete="off"
+              autoFocus
             />
             <InputRightElement width="auto">
               <Button

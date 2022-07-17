@@ -9,7 +9,7 @@ const GameReadyToStartUI = () => {
   const { isPlayerAdmin } = useGameContext()
 
   return (
-    <Flex my={8} alignItems="center" justifyContent="center">
+    <Flex alignItems="center" justifyContent="center">
       {isPlayerAdmin() ? (
         <StartGameButton />
       ) : (

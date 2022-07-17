@@ -53,4 +53,11 @@ export default class Jotto {
     game.startGame()
     this.db.updateGame(game)
   }
+
+  static guessPlayerWord(gameCode, guesser, opponent, word) {
+    const game = this.getGameOrThrow(gameCode)
+    const guessResult = game.guessPlayerWord(guesser, opponent, word)
+    this.db.updateGame(game)
+    return guessResult
+  }
 }

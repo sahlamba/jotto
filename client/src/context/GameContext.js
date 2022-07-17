@@ -22,6 +22,7 @@ export const GameProvider = ({ children }) => {
   const [joiningGame, setJoiningGame] = useState(false)
   const [readyingPlayer, setReadyingPlayer] = useState(false)
   const [startingGame, setStartingGame] = useState(false)
+  const [guessingWord, setGuessingWord] = useState(false)
 
   const toast = useToast()
 
@@ -103,21 +104,70 @@ export const GameProvider = ({ children }) => {
     }
   }
 
-  const hasPlayerJoinedGame = () => {
-    return player && game && game.players && game.players[player.id]
+  const getOpponent = () => {
+    if (player && game && game.players && game.players[player.id]) {
+      return Object.values(game.players)
+        .map((playerState) => playerState.player)
+        .filter((p) => p.id !== player.id)[0]
+    }
+    throw new Error('Could not get opponent')
   }
 
-  const isPlayerReady = () => {
-    return player && hasPlayerJoinedGame() && game.players[player.id].isReady
+  const guessPlayerWord = (word) => {
+    if (socket && game) {
+      setGuessingWord(true)
+      socket.emit(
+        'guess_word',
+        {
+          gameCode: game.code,
+          guesser: player,
+          opponent: getOpponent(),
+          word,
+        },
+        (err) => {
+          setGuessingWord(false)
+          if (err) {
+            notify(toast, { title: err.message, status: 'error' })
+          }
+        },
+      )
+    }
+  }
+
+  const getPlayerState = () => {
+    if (player && game && game.players && game.players[player.id]) {
+      return game.players[player.id]
+    }
   }
 
   const playerJottoWord = () => {
-    return player && isPlayerReady() ? game.players[player.id].word : null
+    return isPlayerReady() ? getPlayerState().word : null
   }
 
-  const isPlayerAdmin = () => {
-    return player && game.admin.id === player.id
+  const getPlayerGuesses = () => {
+    const playerState = getPlayerState()
+    return !!playerState ? playerState.guesses : null
   }
+
+  /*
+   * Returns a map of player name (key) and Jotto word (value)
+   * {
+   *   'awesome-dog': 'BARK',
+   *   'amazing-cat: 'MEOW'
+   * }
+   */
+  const getAllJottoWords = () => {
+    return Object.values(game.players).reduce((obj, playerState) => {
+      obj[playerState.player.name] = playerState.word
+      return obj
+    }, {})
+  }
+
+  const hasPlayerJoinedGame = () => !!getPlayerState()
+  const isPlayerReady = () => !!getPlayerState() && getPlayerState().isReady
+  const isPlayerAdmin = () => player && game.admin.id === player.id
+  const isGameOver = () => game && game.state === 'OVER'
+  const didPlayerWin = () => isGameOver() && game.winnerId === player.id
 
   useEffect(() => {
     const socketListener = io(API_BASE_URL)
@@ -142,6 +192,10 @@ export const GameProvider = ({ children }) => {
       setGame(gameState)
     })
 
+    socketListener.on('player_guessed_word', ({ gameState }) => {
+      setGame(gameState)
+    })
+
     return () => socketListener.disconnect()
   }, [])
 
@@ -151,18 +205,24 @@ export const GameProvider = ({ children }) => {
         socket,
         game,
         loadingGame,
+        joiningGame,
+        readyingPlayer,
+        guessingWord,
+        startingGame,
         connectPlayer,
         disconnectPlayer,
         joinGame,
-        joiningGame,
         readyPlayer,
-        readyingPlayer,
         startGame,
-        startingGame,
+        guessPlayerWord,
         hasPlayerJoinedGame,
         isPlayerReady,
-        playerJottoWord,
+        isGameOver,
+        didPlayerWin,
         isPlayerAdmin,
+        playerJottoWord,
+        getPlayerGuesses,
+        getAllJottoWords,
         notify,
       }}>
       {children}
