@@ -13,8 +13,10 @@ import { ArrowRightIcon } from '@chakra-ui/icons'
 
 import { notify } from '../../utils/ui'
 
+const GAME_CODE_LENGTH = 6
+
 const JoinGameInput = ({ onSubmit }) => {
-  const validGameCodeDescription = 'Game codes are 8 characters long.'
+  const validGameCodeDescription = `Game codes are ${GAME_CODE_LENGTH} characters long.`
 
   const [gameCode, setGameCode] = useState('')
   const toast = useToast()
@@ -25,7 +27,7 @@ const JoinGameInput = ({ onSubmit }) => {
   }
 
   const isValidGameCode = () => {
-    return gameCode && gameCode.length === 8
+    return gameCode && gameCode.length === GAME_CODE_LENGTH
   }
 
   const submit = (evt) => {
