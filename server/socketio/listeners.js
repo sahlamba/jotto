@@ -76,6 +76,21 @@ const onPlayerReady = (
   }
 }
 
+const onStartGame = (_io, _socket, { gameCode }, callback) => {
+  try {
+    validateGameCode(gameCode)
+
+    Jotto.startGame(gameCode)
+
+    _io.to(gameCode).emit('game_started', {
+      gameState: Jotto.getGame(gameCode),
+    })
+    callback()
+  } catch (error) {
+    callback(errorInstanceToJson(error))
+  }
+}
+
 export const GameServerEvents = [
   {
     name: 'connect_player',
@@ -92,5 +107,9 @@ export const GameServerEvents = [
   {
     name: 'ready_player',
     listener: onPlayerReady,
+  },
+  {
+    name: 'start_game',
+    listener: onStartGame,
   },
 ]

@@ -47,4 +47,10 @@ export default class Jotto {
     game.readyPlayer(player, jottoWord)
     this.db.updateGame(game)
   }
+
+  static startGame(gameCode) {
+    const game = this.getGameOrThrow(gameCode)
+    game.startGame()
+    this.db.updateGame(game)
+  }
 }

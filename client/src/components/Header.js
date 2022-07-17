@@ -1,14 +1,14 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import { Flex, Heading, Text, Badge, Tooltip } from '@chakra-ui/react'
+import { Flex, Heading, Text, Avatar } from '@chakra-ui/react'
 
-const Header = ({ player, socket }) => {
+const Header = ({ player }) => {
   return (
     <Flex
       py={8}
       px={16}
-      direction="column"
-      align="center"
+      direction="row"
+      alignItems="center"
       justifyContent="space-between"
       color="purple.800"
       boxShadow="lg">
@@ -16,18 +16,9 @@ const Header = ({ player, socket }) => {
         <Link to="/">Jotto</Link>
       </Heading>
       {player ? (
-        <Flex align="center">
-          <Text mr={1} color="teal.500">
-            Player ID:
-          </Text>
-          <Tooltip
-            isDisabled={!socket}
-            label={`Socket ID: ${socket ? socket.id : ''}`}
-            hasArrow>
-            <Badge colorScheme="teal" variant="solid">
-              {player.name}
-            </Badge>
-          </Tooltip>
+        <Flex direction="column" alignItems="center">
+          <Avatar size="sm" name={player.name} iconLabel={player.name} />
+          <Text>{player.name}</Text>
         </Flex>
       ) : null}
     </Flex>

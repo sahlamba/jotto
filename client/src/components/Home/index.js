@@ -17,6 +17,7 @@ const Home = () => {
   const navigate = useNavigate()
 
   const { player, verifyPlayerOrRedirect } = usePlayerContext()
+
   const [playerGameCodeMappings, setPlayerGameCodeMappings] = useState([])
   const [isCreatingGame, setIsCreatingGame] = useState(false)
 
@@ -61,7 +62,7 @@ const Home = () => {
         py={12}
         px={4}
         direction="column"
-        align="center"
+        alignItems="center"
         justifyContent="center">
         <JoinGameInput onSubmit={joinGameOnSubmit} />
         <Heading my={6} size="sm">
@@ -73,7 +74,7 @@ const Home = () => {
         />
       </Flex>
       {playerGameCodeMappings && playerGameCodeMappings.length ? (
-        <Flex direction="column" align="center" justifyContent="center">
+        <Flex direction="column" alignItems="center" justifyContent="center">
           <Heading as="u" mb={4} size="md" color="purple.800">
             Your Live Games
           </Heading>

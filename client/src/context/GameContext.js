@@ -21,6 +21,7 @@ export const GameProvider = ({ children }) => {
   })
   const [joiningGame, setJoiningGame] = useState(false)
   const [readyingPlayer, setReadyingPlayer] = useState(false)
+  const [startingGame, setStartingGame] = useState(false)
 
   const toast = useToast()
 
@@ -55,10 +56,10 @@ export const GameProvider = ({ children }) => {
     }
   }
 
-  const joinGame = (gameCode, player) => {
-    if (socket && gameCode) {
+  const joinGame = () => {
+    if (socket && game) {
       setJoiningGame(true)
-      socket.emit('join_game', { gameCode, player }, (err) => {
+      socket.emit('join_game', { gameCode: game.code, player }, (err) => {
         setJoiningGame(false)
         if (err) {
           notify(toast, { title: err.message, status: 'error' })
@@ -67,7 +68,7 @@ export const GameProvider = ({ children }) => {
     }
   }
 
-  const readyPlayer = (gameCode, player, jottoWord) => {
+  const readyPlayer = (jottoWord) => {
     if (jottoWord.length > game.settings.maxWordLength) {
       notify(toast, {
         title: `Maximum word length is ${game.settings.maxWordLength}`,
@@ -75,10 +76,26 @@ export const GameProvider = ({ children }) => {
       })
       return
     }
-    if (socket && gameCode) {
+    if (socket && game) {
       setReadyingPlayer(true)
-      socket.emit('ready_player', { gameCode, player, jottoWord }, (err) => {
-        setReadyingPlayer(false)
+      socket.emit(
+        'ready_player',
+        { gameCode: game.code, player, jottoWord },
+        (err) => {
+          setReadyingPlayer(false)
+          if (err) {
+            notify(toast, { title: err.message, status: 'error' })
+          }
+        },
+      )
+    }
+  }
+
+  const startGame = () => {
+    if (socket && game) {
+      setStartingGame(true)
+      socket.emit('start_game', { gameCode: game.code }, (err) => {
+        setStartingGame(false)
         if (err) {
           notify(toast, { title: err.message, status: 'error' })
         }
@@ -86,18 +103,20 @@ export const GameProvider = ({ children }) => {
     }
   }
 
-  const hasPlayerJoinedGame = (player) => {
+  const hasPlayerJoinedGame = () => {
     return player && game && game.players && game.players[player.id]
   }
 
-  const isPlayerReady = (player) => {
-    return (
-      player && hasPlayerJoinedGame(player) && game.players[player.id].isReady
-    )
+  const isPlayerReady = () => {
+    return player && hasPlayerJoinedGame() && game.players[player.id].isReady
   }
 
-  const playerJottoWord = (player) => {
-    return player && isPlayerReady(player) ? game.players[player.id].word : null
+  const playerJottoWord = () => {
+    return player && isPlayerReady() ? game.players[player.id].word : null
+  }
+
+  const isPlayerAdmin = () => {
+    return player && game.admin.id === player.id
   }
 
   useEffect(() => {
@@ -119,6 +138,10 @@ export const GameProvider = ({ children }) => {
       setGame(gameState)
     })
 
+    socketListener.on('game_started', ({ gameState }) => {
+      setGame(gameState)
+    })
+
     return () => socketListener.disconnect()
   }, [])
 
@@ -134,9 +157,12 @@ export const GameProvider = ({ children }) => {
         joiningGame,
         readyPlayer,
         readyingPlayer,
+        startGame,
+        startingGame,
         hasPlayerJoinedGame,
         isPlayerReady,
         playerJottoWord,
+        isPlayerAdmin,
         notify,
       }}>
       {children}

@@ -7,11 +7,17 @@ import {
   Input,
   InputGroup,
   InputRightElement,
+  useToast,
 } from '@chakra-ui/react'
 import { ArrowRightIcon } from '@chakra-ui/icons'
 
+import { notify } from '../../utils/ui'
+
 const JoinGameInput = ({ onSubmit }) => {
+  const validGameCodeDescription = 'Game codes are 8 characters long.'
+
   const [gameCode, setGameCode] = useState('')
+  const toast = useToast()
 
   const updateGameCode = (evt) => {
     evt.preventDefault()
@@ -26,11 +32,17 @@ const JoinGameInput = ({ onSubmit }) => {
     evt.preventDefault()
     if (isValidGameCode()) {
       onSubmit({ gameCode })
+    } else {
+      notify(toast, {
+        title: 'Invalid game code!',
+        description: validGameCodeDescription,
+        status: 'error',
+      })
     }
   }
 
   return (
-    <Flex maxW="100%" align="center" justifyContent="center">
+    <Flex maxW="100%" alignItems="center" justifyContent="center">
       <form onSubmit={submit}>
         <FormControl>
           <InputGroup size="lg">
@@ -41,7 +53,7 @@ const JoinGameInput = ({ onSubmit }) => {
               placeholder="Game Code"
               value={gameCode}
               onChange={updateGameCode}
-              isInvalid={!isValidGameCode()}
+              isInvalid={gameCode && !isValidGameCode()}
               errorBorderColor="crimson"
             />
             <InputRightElement width="auto">
@@ -55,9 +67,9 @@ const JoinGameInput = ({ onSubmit }) => {
               </Button>
             </InputRightElement>
           </InputGroup>
-          {!isValidGameCode() ? (
+          {gameCode && !isValidGameCode() ? (
             <FormHelperText textAlign="center">
-              Game codes are 8 characters long.
+              {validGameCodeDescription}
             </FormHelperText>
           ) : null}
         </FormControl>

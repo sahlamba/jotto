@@ -10,40 +10,62 @@ import {
 
 import { useGameContext } from '../../context/GameContext'
 
-const GameCode = ({ game }) => {
+const GameCode = () => {
+  const { game } = useGameContext()
+
   return (
-    <Flex my={1} mx={1} align="center">
-      <Text color="green.500">Game Code:</Text>
-      <Badge ml={1} colorScheme="green" variant="solid" fontSize="1.25rem">
+    <Flex my={1} mx={1} direction="column" alignItems="center">
+      <Text mb={1} fontSize="0.8rem" color="gray.500">
+        Game code
+      </Text>
+      <Badge ml={1} variant="solid" fontSize="1.2rem">
         {game.code}
       </Badge>
     </Flex>
   )
 }
 
-const PlayerJottoWord = ({ playerJottoWord }) => {
+const PlayerJottoWord = () => {
+  const { playerJottoWord } = useGameContext()
+
   const word = playerJottoWord()
   if (!word) return null
 
   return (
-    <Flex my={1} mx={1} align="center">
-      <Text>Your Word:</Text>
-      <Badge ml={1} variant="solid" fontSize="1.25rem">
+    <Flex my={1} mx={1} direction="column" alignItems="center">
+      <Text mb={1} fontSize="0.8rem" color="gray.500">
+        Your word
+      </Text>
+      <Badge ml={1} variant="solid" fontSize="1.2rem" colorScheme="purple">
         {word}
       </Badge>
     </Flex>
   )
 }
 
-const PlayersInGame = ({ game }) => {
+const PlayersInGame = () => {
+  const { game } = useGameContext()
+
+  if (!game || !game.players || !Object.values(game.players).length) {
+    return null
+  }
+
   const renderPlayerNamesInGame = () =>
     game ? (
-      <Flex my={1} mx={1} align="center">
-        <Text>Players in Room:</Text>
+      <Flex my={1} mx={1} direction="column" alignItems="center">
+        <Text mb={1} fontSize="0.8rem" color="gray.500">
+          Players in game
+        </Text>
         <AvatarGroup size="sm" max={10}>
           {Object.values(game.players).map((playerState) => (
-            <Avatar key={playerState.player.id} name={playerState.player.name}>
-              <AvatarBadge boxSize="1.25em" bg="green.500" />
+            <Avatar
+              key={playerState.player.id}
+              name={playerState.player.name}
+              showBorder>
+              <AvatarBadge
+                boxSize="1.25em"
+                bg={playerState.isReady ? 'green.500' : 'orange.500'}
+              />
             </Avatar>
           ))}
         </AvatarGroup>
@@ -53,23 +75,19 @@ const PlayersInGame = ({ game }) => {
     )
 
   return (
-    <Flex my={1} mx={1} align="center">
+    <Flex my={1} mx={1} alignItems="center">
       {renderPlayerNamesInGame()}
     </Flex>
   )
 }
 
 const GameDetails = () => {
-  const { game, playerJottoWord } = useGameContext()
-
   return (
     <React.Fragment>
-      <Flex my={4} align="center" justifyContent="center">
-        <GameCode game={game} />
-        <PlayerJottoWord playerJottoWord={playerJottoWord} />
-      </Flex>
-      <Flex my={4} align="center" justifyContent="center">
-        <PlayersInGame game={game} />
+      <Flex my={4} alignItems="baseline" justifyContent="center">
+        <GameCode />
+        <PlayerJottoWord />
+        <PlayersInGame />
       </Flex>
     </React.Fragment>
   )

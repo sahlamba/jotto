@@ -15,7 +15,7 @@ const PlayerNameInput = () => {
   const { player, randomName, updateName, persistPlayer } = usePlayerContext()
 
   return (
-    <Flex maxW="100%" mt={8} align="center" justifyContent="center">
+    <Flex maxW="100%" mt={8} alignItems="center" justifyContent="center">
       <form onSubmit={persistPlayer}>
         <FormControl>
           <FormLabel htmlFor="player-name">Player Name</FormLabel>

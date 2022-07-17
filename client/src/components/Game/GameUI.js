@@ -30,9 +30,9 @@ const GameUI = () => {
 
   return (
     <React.Fragment>
-      <Header player={player} socket={socket} />
+      <Header player={player} />
       {loadingGame.status ? (
-        <Flex my={8} align="center" justifyContent="center">
+        <Flex my={8} alignItems="center" justifyContent="center">
           <Text>{loadingGame.message}</Text>
           <Spinner ml={2} />
         </Flex>

@@ -13,7 +13,7 @@ const GameContent = () => {
 
   if (!loadingGame.status && !game) {
     return (
-      <Flex my={8} align="center" justifyContent="center">
+      <Flex my={8} alignItems="center" justifyContent="center">
         No game found!
       </Flex>
     )

@@ -50,6 +50,15 @@ export default class Game {
     }
   }
 
+  startGame() {
+    if (this.state !== GameState.READY_TO_START) {
+      throw new Error(
+        `Could not start game, expected game state: ${GameState.READY_TO_START}, actual: ${this.state}`,
+      )
+    }
+    this.state = GameState.PLAYING
+  }
+
   readyToStartGame() {
     return (
       this.state === GameState.CREATED &&
