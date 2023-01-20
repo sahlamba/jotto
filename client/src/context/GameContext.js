@@ -170,7 +170,9 @@ export const GameProvider = ({ children }) => {
   const didPlayerWin = () => isGameOver() && game.winnerId === player.id
 
   useEffect(() => {
-    const socketListener = io(API_BASE_URL)
+    const socketListener = io('/', {
+      path: `${API_BASE_URL}/socket.io`
+    })
 
     socketListener.on('connect', () => {
       setSocket(socketListener)
